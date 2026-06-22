@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.37328.6 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KnowledgeHub.API", "KnowledgeHub.API\KnowledgeHub.API.csproj", "{19C06E62-25C8-4CD3-BB05-F0FA5CB31D97}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{19C06E62-25C8-4CD3-BB05-F0FA5CB31D97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19C06E62-25C8-4CD3-BB05-F0FA5CB31D97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19C06E62-25C8-4CD3-BB05-F0FA5CB31D97}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19C06E62-25C8-4CD3-BB05-F0FA5CB31D97}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{19C06E62-25C8-4CD3-BB05-F0FA5CB31D97} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {63A56BD6-87DC-47F9-93E9-B388619381D2}
+	EndGlobalSection
+EndGlobal
