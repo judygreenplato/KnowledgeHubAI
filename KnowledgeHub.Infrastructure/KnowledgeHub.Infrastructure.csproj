@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\KnowledgeHub.Application\KnowledgeHub.Application.csproj" />
+    <ProjectReference Include="..\KnowledgeHub.Domain\KnowledgeHub.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

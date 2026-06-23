@@ -14,4 +14,9 @@
     <Folder Include="Controllers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\KnowledgeHub.Application\KnowledgeHub.Application.csproj" />
+    <ProjectReference Include="..\KnowledgeHub.Infrastructure\KnowledgeHub.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>
