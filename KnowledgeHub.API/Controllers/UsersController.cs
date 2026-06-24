@@ -88,4 +88,37 @@ public class UsersController : ControllerBase
             Message = "User registered successfully"
         });
     }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginRequest request)
+    {
+        var user = await _dbContext.Users
+            .FirstOrDefaultAsync(x => x.Email == request.Email);
+
+        if (user == null)
+        {
+            return Unauthorized(new
+            {
+                Message = "Invalid email or password"
+            });
+        }
+
+        var result = _passwordHasher.VerifyHashedPassword(
+            user,
+            user.PasswordHash,
+            request.Password);
+
+        if (result == PasswordVerificationResult.Failed)
+        {
+            return Unauthorized(new
+            {
+                Message = "Invalid email or password"
+            });
+        }
+
+        return Ok(new
+        {
+            Message = "Login successful"
+        });
+    }
 }
