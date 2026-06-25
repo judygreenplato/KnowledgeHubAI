@@ -5,6 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
+
 namespace KnowledgeHub.API.Controllers;
 
 [ApiController]
@@ -13,12 +18,17 @@ public class UsersController : ControllerBase
 {
     private readonly AppDbContext _dbContext;
     private readonly PasswordHasher<User> _passwordHasher;
+    private readonly IConfiguration _configuration;
 
-    public UsersController(AppDbContext dbContext)
+    public UsersController(
+    AppDbContext dbContext,
+    IConfiguration configuration)
     {
         _dbContext = dbContext;
+        _configuration = configuration;
         _passwordHasher = new PasswordHasher<User>();
     }
+
 
     [HttpGet]
     public async Task<IActionResult> GetUsers()
@@ -115,10 +125,36 @@ public class UsersController : ControllerBase
                 Message = "Invalid email or password"
             });
         }
+        var claims = new[]
+     {
+    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+    new Claim(ClaimTypes.Email, user.Email)
+      };
+
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(
+                _configuration["Jwt:Key"]!));
+
+        var credentials =
+            new SigningCredentials(
+                key,
+                SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: _configuration["Jwt:Issuer"],
+            audience: _configuration["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: credentials);
+
+        var tokenString =
+            new JwtSecurityTokenHandler()
+                .WriteToken(token);
 
         return Ok(new
         {
-            Message = "Login successful"
+            Token = tokenString
         });
+
     }
 }
