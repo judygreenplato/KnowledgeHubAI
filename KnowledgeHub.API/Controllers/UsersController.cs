@@ -9,6 +9,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
 
 namespace KnowledgeHub.API.Controllers;
 
@@ -98,7 +99,37 @@ public class UsersController : ControllerBase
             Message = "User registered successfully"
         });
     }
+    private string GenerateJwtToken(User user)
+    {
+        var claims = new[]
+        {
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Email, user.Email)
+    };
 
+        var key = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(
+                _configuration["Jwt:Key"]!));
+
+        var credentials = new SigningCredentials(
+            key,
+            SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: _configuration["Jwt:Issuer"],
+            audience: _configuration["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(1),
+            signingCredentials: credentials);
+
+        return new JwtSecurityTokenHandler()
+            .WriteToken(token);
+    }
+    private static string GenerateRefreshToken()
+    {
+        return Convert.ToBase64String(
+            RandomNumberGenerator.GetBytes(64));
+    }
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest request)
     {
@@ -125,36 +156,65 @@ public class UsersController : ControllerBase
                 Message = "Invalid email or password"
             });
         }
-        var claims = new[]
-     {
-    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-    new Claim(ClaimTypes.Email, user.Email)
-      };
-
-        var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(
-                _configuration["Jwt:Key"]!));
-
-        var credentials =
-            new SigningCredentials(
-                key,
-                SecurityAlgorithms.HmacSha256);
-
-        var token = new JwtSecurityToken(
-            issuer: _configuration["Jwt:Issuer"],
-            audience: _configuration["Jwt:Audience"],
-            claims: claims,
-            expires: DateTime.UtcNow.AddHours(1),
-            signingCredentials: credentials);
-
+       
         var tokenString =
-            new JwtSecurityTokenHandler()
-                .WriteToken(token);
+             GenerateJwtToken(user);
+        var refreshToken = GenerateRefreshToken();
 
-        return Ok(new
+        user.RefreshToken = refreshToken;
+        user.RefreshTokenExpiryTime = DateTime.UtcNow.AddDays(7);
+
+        await _dbContext.SaveChangesAsync();
+
+        //return Ok(new
+        // {
+        //   Token = tokenString
+        //});
+        return Ok(new LoginResponse
         {
-            Token = tokenString
+            AccessToken = tokenString,
+            RefreshToken = refreshToken
         });
 
+    }
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken(
+    RefreshTokenRequest request)
+    {
+        var user = await _dbContext.Users
+            .FirstOrDefaultAsync(u =>
+                u.RefreshToken == request.RefreshToken);
+
+        if (user == null)
+        {
+            return Unauthorized(new
+            {
+                Message = "Invalid refresh token"
+            });
+        }
+
+        if (user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+        {
+            return Unauthorized(new
+            {
+                Message = "Refresh token expired"
+            });
+        }
+
+        var newAccessToken = GenerateJwtToken(user);
+
+        var newRefreshToken = GenerateRefreshToken();
+
+        user.RefreshToken = newRefreshToken;
+        user.RefreshTokenExpiryTime =
+            DateTime.UtcNow.AddDays(7);
+
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new LoginResponse
+        {
+            AccessToken = newAccessToken,
+            RefreshToken = newRefreshToken
+        });
     }
 }

@@ -15,5 +15,9 @@ namespace KnowledgeHub.Domain.Entities;
         public string PasswordHash { get; set; } = string.Empty;
 
         public DateTime CreatedAtUtc { get; set; }
-    }
+
+    public string? RefreshToken { get; set; }
+
+    public DateTime? RefreshTokenExpiryTime { get; set; }
+}
 
