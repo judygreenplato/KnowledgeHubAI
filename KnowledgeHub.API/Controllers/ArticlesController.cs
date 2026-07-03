@@ -4,6 +4,7 @@ using KnowledgeHub.Domain.Entities;
 using KnowledgeHub.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace KnowledgeHub.API.Controllers;
 
@@ -52,5 +53,22 @@ public class ArticlesController : ControllerBase
             Content = article.Content,
             CreatedAtUtc = article.CreatedAtUtc
         });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetArticles()
+    {
+        var articles = await _dbContext.Articles
+            .OrderByDescending(a => a.CreatedAtUtc)
+            .Select(a => new ArticleResponse
+            {
+                Id = a.Id,
+                Title = a.Title,
+                Content = a.Content,
+                CreatedAtUtc = a.CreatedAtUtc
+            })
+            .ToListAsync();
+
+        return Ok(articles);
     }
 }
