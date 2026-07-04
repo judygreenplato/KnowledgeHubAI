@@ -21,5 +21,7 @@ namespace KnowledgeHub.Domain.Entities;
     public DateTime? RefreshTokenExpiryTime { get; set; }
 
     public string Role { get; set; } = "User";
+    public ICollection<Article> Articles { get; set; }
+    = new List<Article>();
 }
 

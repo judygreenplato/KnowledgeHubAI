@@ -5,6 +5,7 @@ using KnowledgeHub.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace KnowledgeHub.API.Controllers;
 
@@ -85,6 +86,64 @@ public class ArticlesController : ControllerBase
                 Message = "Article not found"
             });
         }
+
+        return Ok(new ArticleResponse
+        {
+            Id = article.Id,
+            Title = article.Title,
+            Content = article.Content,
+            CreatedAtUtc = article.CreatedAtUtc
+        });
+    }
+    [HttpPut("{id}")]
+    [Authorize]
+    public async Task<IActionResult> UpdateArticle(
+    Guid id,
+    UpdateArticleRequest request)
+    {
+        var article = await _dbContext.Articles
+            .FirstOrDefaultAsync(a => a.Id == id);
+
+        if (article == null)
+        {
+            return NotFound(new
+            {
+                Message = "Article not found"
+            });
+        }
+
+        var userIdClaim =
+            User.FindFirst(ClaimTypes.NameIdentifier);
+
+        var roleClaim =
+            User.FindFirst(ClaimTypes.Role);
+
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+
+        var currentUserId =
+            Guid.Parse(userIdClaim.Value);
+
+        var currentUserRole =
+            roleClaim?.Value;
+
+        var isOwner =
+            article.CreatedByUserId == currentUserId;
+
+        var isAdmin =
+            currentUserRole == "Admin";
+
+        if (!isOwner && !isAdmin)
+        {
+            return Forbid();
+        }
+
+        article.Title = request.Title;
+        article.Content = request.Content;
+
+        await _dbContext.SaveChangesAsync();
 
         return Ok(new ArticleResponse
         {

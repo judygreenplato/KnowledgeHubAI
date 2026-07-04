@@ -16,4 +16,5 @@ public class Article
     public DateTime CreatedAtUtc { get; set; }
 
     public Guid CreatedByUserId { get; set; }
+    public User CreatedByUser { get; set; } = null!;
 }
