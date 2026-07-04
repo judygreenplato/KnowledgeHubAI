@@ -71,4 +71,27 @@ public class ArticlesController : ControllerBase
 
         return Ok(articles);
     }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetArticle(Guid id)
+    {
+        var article = await _dbContext.Articles
+            .FirstOrDefaultAsync(a => a.Id == id);
+
+        if (article == null)
+        {
+            return NotFound(new
+            {
+                Message = "Article not found"
+            });
+        }
+
+        return Ok(new ArticleResponse
+        {
+            Id = article.Id,
+            Title = article.Title,
+            Content = article.Content,
+            CreatedAtUtc = article.CreatedAtUtc
+        });
+    }
 }
