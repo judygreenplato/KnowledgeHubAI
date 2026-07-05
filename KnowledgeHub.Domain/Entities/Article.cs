@@ -17,4 +17,7 @@ public class Article
 
     public Guid CreatedByUserId { get; set; }
     public User CreatedByUser { get; set; } = null!;
+    public bool IsPublished { get; set; }
+
+    public DateTime? UpdatedAtUtc { get; set; }
 }

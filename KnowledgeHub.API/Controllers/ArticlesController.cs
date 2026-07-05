@@ -40,7 +40,8 @@ public class ArticlesController : ControllerBase
             Title = request.Title,
             Content = request.Content,
             CreatedAtUtc = DateTime.UtcNow,
-            CreatedByUserId = Guid.Parse(userIdClaim.Value)
+            CreatedByUserId = Guid.Parse(userIdClaim.Value),
+            IsPublished = false,
         };
 
         _dbContext.Articles.Add(article);
@@ -60,6 +61,7 @@ public class ArticlesController : ControllerBase
     public async Task<IActionResult> GetArticles()
     {
         var articles = await _dbContext.Articles
+            .Where(a => a.IsPublished)
             .OrderByDescending(a => a.CreatedAtUtc)
             .Select(a => new ArticleResponse
             {
@@ -142,6 +144,7 @@ public class ArticlesController : ControllerBase
 
         article.Title = request.Title;
         article.Content = request.Content;
+        article.UpdatedAtUtc = DateTime.UtcNow;
 
         await _dbContext.SaveChangesAsync();
 
@@ -204,6 +207,62 @@ public class ArticlesController : ControllerBase
         return Ok(new
         {
             Message = "Article deleted successfully"
+        });
+    }
+
+    [HttpPost("{id}/publish")]
+    [Authorize]
+    public async Task<IActionResult> PublishArticle(Guid id)
+    {
+        var article = await _dbContext.Articles
+            .FirstOrDefaultAsync(a => a.Id == id);
+
+        if (article == null)
+        {
+            return NotFound(new
+            {
+                Message = "Article not found"
+            });
+        }
+
+        var userIdClaim =
+            User.FindFirst(
+                System.Security.Claims.ClaimTypes.NameIdentifier);
+
+        var roleClaim =
+            User.FindFirst(
+                System.Security.Claims.ClaimTypes.Role);
+
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+
+        var currentUserId =
+            Guid.Parse(userIdClaim.Value);
+
+        var currentUserRole =
+            roleClaim?.Value;
+
+        var isOwner =
+            article.CreatedByUserId == currentUserId;
+
+        var isAdmin =
+            currentUserRole == "Admin";
+
+        if (!isOwner && !isAdmin)
+        {
+            return Forbid();
+        }
+
+        article.IsPublished = true;
+        article.UpdatedAtUtc = DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new
+        {
+            Message = "Article published successfully"
         });
     }
 
