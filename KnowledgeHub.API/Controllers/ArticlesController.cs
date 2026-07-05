@@ -153,4 +153,58 @@ public class ArticlesController : ControllerBase
             CreatedAtUtc = article.CreatedAtUtc
         });
     }
+    
+    [HttpDelete("{id}")]
+    [Authorize]
+    public async Task<IActionResult> DeleteArticle(Guid id)
+    {
+        var article = await _dbContext.Articles
+            .FirstOrDefaultAsync(a => a.Id == id);
+
+        if (article == null)
+        {
+            return NotFound(new
+            {
+                Message = "Article not found"
+            });
+        }
+
+        var userIdClaim =
+            User.FindFirst(ClaimTypes.NameIdentifier);
+
+        var roleClaim =
+            User.FindFirst(ClaimTypes.Role);
+
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+
+        var currentUserId =
+            Guid.Parse(userIdClaim.Value);
+
+        var currentUserRole =
+            roleClaim?.Value;
+
+        var isOwner =
+            article.CreatedByUserId == currentUserId;
+
+        var isAdmin =
+            currentUserRole == "Admin";
+
+        if (!isOwner && !isAdmin)
+        {
+            return Forbid();
+        }
+
+        _dbContext.Articles.Remove(article);
+
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(new
+        {
+            Message = "Article deleted successfully"
+        });
+    }
+
 }
