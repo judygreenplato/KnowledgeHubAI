@@ -59,14 +59,22 @@ public class ArticlesController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetArticles(int page = 1,
-    int pageSize = 10)
+    int pageSize = 10, string? search = null)
     {
-        var totalCount = await _dbContext.Articles
+        var query = _dbContext.Articles
     .Where(a => a.IsPublished)
+    .AsQueryable();
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(a =>
+                a.Title.Contains(search) ||
+                a.Content.Contains(search));
+        }
+
+        var totalCount = await query
     .CountAsync();
 
-        var articles = await _dbContext.Articles
-            //.Where(a => a.IsPublished)
+        var articles = await query
             .OrderByDescending(a => a.CreatedAtUtc)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
