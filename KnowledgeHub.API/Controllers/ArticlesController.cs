@@ -280,5 +280,36 @@ public class ArticlesController : ControllerBase
             Message = "Article published successfully"
         });
     }
+    [HttpGet("my")]
+    [Authorize]
+    public async Task<IActionResult> GetMyArticles()
+    {
+        var userIdClaim =
+            User.FindFirst(ClaimTypes.NameIdentifier);
+
+        if (userIdClaim == null)
+        {
+            return Unauthorized();
+        }
+
+        var currentUserId =
+            Guid.Parse(userIdClaim.Value);
+
+        var articles = await _dbContext.Articles
+            .Where(a => a.CreatedByUserId == currentUserId)
+            .OrderByDescending(a => a.CreatedAtUtc)
+            .Select(a => new
+            {
+                a.Id,
+                a.Title,
+                a.Content,
+                a.IsPublished,
+                a.CreatedAtUtc,
+                a.UpdatedAtUtc
+            })
+            .ToListAsync();
+
+        return Ok(articles);
+    }
 
 }
