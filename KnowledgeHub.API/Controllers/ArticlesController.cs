@@ -58,11 +58,18 @@ public class ArticlesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetArticles()
+    public async Task<IActionResult> GetArticles(int page = 1,
+    int pageSize = 10)
     {
+        var totalCount = await _dbContext.Articles
+    .Where(a => a.IsPublished)
+    .CountAsync();
+
         var articles = await _dbContext.Articles
-            .Where(a => a.IsPublished)
+            //.Where(a => a.IsPublished)
             .OrderByDescending(a => a.CreatedAtUtc)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(a => new ArticleResponse
             {
                 Id = a.Id,
