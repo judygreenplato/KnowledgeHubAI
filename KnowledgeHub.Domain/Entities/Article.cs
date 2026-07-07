@@ -20,4 +20,7 @@ public class Article
     public bool IsPublished { get; set; }
 
     public DateTime? UpdatedAtUtc { get; set; }
+    public Guid CategoryId { get; set; }
+
+    public Category Category { get; set; } = null!;
 }

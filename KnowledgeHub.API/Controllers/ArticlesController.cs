@@ -41,6 +41,7 @@ public class ArticlesController : ControllerBase
             Content = request.Content,
             CreatedAtUtc = DateTime.UtcNow,
             CreatedByUserId = Guid.Parse(userIdClaim.Value),
+            CategoryId = request .CategoryId,
             IsPublished = false,
         };
 

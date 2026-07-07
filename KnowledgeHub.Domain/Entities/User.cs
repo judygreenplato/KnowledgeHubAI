@@ -20,7 +20,7 @@ namespace KnowledgeHub.Domain.Entities;
 
     public DateTime? RefreshTokenExpiryTime { get; set; }
 
-    public string Role { get; set; } = "User";
+    public string Role { get; set; } = "Admin";
     public ICollection<Article> Articles { get; set; }
     = new List<Article>();
 }
