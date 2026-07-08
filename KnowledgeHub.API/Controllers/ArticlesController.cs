@@ -1,12 +1,11 @@
 ﻿
 using KnowledgeHub.Application.DTOs;
+using KnowledgeHub.Application.Interfaces;
 using KnowledgeHub.Domain.Entities;
 using KnowledgeHub.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
-
 namespace KnowledgeHub.API.Controllers;
 
 [ApiController]
@@ -14,10 +13,13 @@ namespace KnowledgeHub.API.Controllers;
 public class ArticlesController : ControllerBase
 {
     private readonly AppDbContext _dbContext;
-
-    public ArticlesController(AppDbContext dbContext)
+    private readonly IArticleAuthorizationService _articleAuthorizationService;
+    private readonly ICurrentUserService _currentUserService;
+    public ArticlesController(AppDbContext dbContext, ICurrentUserService currentUserService,IArticleAuthorizationService articleAuthorizationService)
     {
         _dbContext = dbContext;
+        _currentUserService = currentUserService;
+        _articleAuthorizationService = articleAuthorizationService;
     }
 
     [HttpPost]
@@ -25,14 +27,12 @@ public class ArticlesController : ControllerBase
     public async Task<IActionResult> CreateArticle(
     CreateArticleRequest request)
     {
-        var userIdClaim =
-            User.FindFirst(
-                System.Security.Claims.ClaimTypes.NameIdentifier);
-
-        if (userIdClaim == null)
+        if (!_currentUserService.IsAuthenticated)
         {
             return Unauthorized();
         }
+
+        var userId = _currentUserService.UserId!.Value;
 
         var article = new Article
         {
@@ -40,7 +40,7 @@ public class ArticlesController : ControllerBase
             Title = request.Title,
             Content = request.Content,
             CreatedAtUtc = DateTime.UtcNow,
-            CreatedByUserId = Guid.Parse(userIdClaim.Value),
+            CreatedByUserId = userId,
             CategoryId = request .CategoryId,
             IsPublished = false,
         };
@@ -130,30 +130,10 @@ public class ArticlesController : ControllerBase
             });
         }
 
-        var userIdClaim =
-            User.FindFirst(ClaimTypes.NameIdentifier);
+       
 
-        var roleClaim =
-            User.FindFirst(ClaimTypes.Role);
-
-        if (userIdClaim == null)
-        {
-            return Unauthorized();
-        }
-
-        var currentUserId =
-            Guid.Parse(userIdClaim.Value);
-
-        var currentUserRole =
-            roleClaim?.Value;
-
-        var isOwner =
-            article.CreatedByUserId == currentUserId;
-
-        var isAdmin =
-            currentUserRole == "Admin";
-
-        if (!isOwner && !isAdmin)
+        if (!_articleAuthorizationService
+         .CanModify(article))
         {
             return Forbid();
         }
@@ -188,33 +168,15 @@ public class ArticlesController : ControllerBase
             });
         }
 
-        var userIdClaim =
-            User.FindFirst(ClaimTypes.NameIdentifier);
 
-        var roleClaim =
-            User.FindFirst(ClaimTypes.Role);
 
-        if (userIdClaim == null)
-        {
-            return Unauthorized();
-        }
-
-        var currentUserId =
-            Guid.Parse(userIdClaim.Value);
-
-        var currentUserRole =
-            roleClaim?.Value;
-
-        var isOwner =
-            article.CreatedByUserId == currentUserId;
-
-        var isAdmin =
-            currentUserRole == "Admin";
-
-        if (!isOwner && !isAdmin)
+        if (!_articleAuthorizationService
+        .CanModify(article))
         {
             return Forbid();
         }
+
+
 
         _dbContext.Articles.Remove(article);
 
@@ -241,32 +203,9 @@ public class ArticlesController : ControllerBase
             });
         }
 
-        var userIdClaim =
-            User.FindFirst(
-                System.Security.Claims.ClaimTypes.NameIdentifier);
 
-        var roleClaim =
-            User.FindFirst(
-                System.Security.Claims.ClaimTypes.Role);
-
-        if (userIdClaim == null)
-        {
-            return Unauthorized();
-        }
-
-        var currentUserId =
-            Guid.Parse(userIdClaim.Value);
-
-        var currentUserRole =
-            roleClaim?.Value;
-
-        var isOwner =
-            article.CreatedByUserId == currentUserId;
-
-        var isAdmin =
-            currentUserRole == "Admin";
-
-        if (!isOwner && !isAdmin)
+        if (!_articleAuthorizationService
+         .CanModify(article))
         {
             return Forbid();
         }
@@ -285,19 +224,15 @@ public class ArticlesController : ControllerBase
     [Authorize]
     public async Task<IActionResult> GetMyArticles()
     {
-        var userIdClaim =
-            User.FindFirst(ClaimTypes.NameIdentifier);
+ 
 
-        if (userIdClaim == null)
+        if (!_currentUserService.IsAuthenticated)
         {
             return Unauthorized();
         }
-
-        var currentUserId =
-            Guid.Parse(userIdClaim.Value);
-
+        var userId = _currentUserService.UserId!.Value;
         var articles = await _dbContext.Articles
-            .Where(a => a.CreatedByUserId == currentUserId)
+            .Where(a => a.CreatedByUserId == userId)
             .OrderByDescending(a => a.CreatedAtUtc)
             .Select(a => new
             {

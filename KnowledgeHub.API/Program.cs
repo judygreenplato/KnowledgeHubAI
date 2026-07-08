@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using KnowledgeHub.Application.Interfaces;
+using KnowledgeHub.Infrastructure.Services;
 namespace KnowledgeHub.API
 {
     public class Program
@@ -42,6 +44,9 @@ namespace KnowledgeHub.API
                         };
                 });
             builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped< ICurrentUserService, CurrentUserService>();
+            builder.Services.AddScoped< IArticleAuthorizationService, ArticleAuthorizationService>();
             builder.Services.AddSwaggerGen(options =>
             {
                 options.AddSecurityDefinition("Bearer",
