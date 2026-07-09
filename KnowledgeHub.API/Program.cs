@@ -47,6 +47,7 @@ namespace KnowledgeHub.API
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped< ICurrentUserService, CurrentUserService>();
             builder.Services.AddScoped< IArticleAuthorizationService, ArticleAuthorizationService>();
+            builder.Services.AddScoped<IArticleService,ArticleService>();
             builder.Services.AddSwaggerGen(options =>
             {
                 options.AddSecurityDefinition("Bearer",
