@@ -3,6 +3,7 @@ using KnowledgeHub.Application.Interfaces;
 using KnowledgeHub.Domain.Entities;
 using KnowledgeHub.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using KnowledgeHub.Application.Exceptions;
 
 namespace KnowledgeHub.Infrastructure.Services;
 
@@ -80,15 +81,14 @@ public class ArticleService : IArticleService
 
         if (article == null)
         {
-            throw new Exception("Article not found");
+            throw new NotFoundException("Article not found");
         }
 
 
         if (!_authorizationService
          .CanModify(article))
         {
-            throw new UnauthorizedAccessException(
-                 "You cannot modify this article");
+            throw new ForbiddenException("You cannot modify this article");
         }
 
         article.IsPublished = true;
@@ -106,13 +106,12 @@ public class ArticleService : IArticleService
 
         if (article == null)
         {
-            throw new Exception("Article not found");
+            throw new NotFoundException("Article not found");
         }
 
         if (!_authorizationService.CanModify(article))
         {
-            throw new UnauthorizedAccessException(
-                 "You cannot modify this article");
+            throw new ForbiddenException("You cannot modify this article");
         }
 
         _dbContext.Articles.Remove(article);
@@ -159,7 +158,7 @@ public class ArticleService : IArticleService
 
         if (article == null)
         {
-            throw new Exception("Article not found");
+            throw new NotFoundException("Article not found");
         }
 
         return new ArticleResponse
@@ -181,14 +180,13 @@ public class ArticleService : IArticleService
 
         if (article == null)
         {
-            throw new Exception("Article not found");
+            throw new NotFoundException("Article not found");
         }
 
         if (!_authorizationService
             .CanModify(article))
         {
-            throw new UnauthorizedAccessException(
-                "You cannot modify this article");
+            throw new ForbiddenException("You cannot modify this article");
         }
 
         article.Title = request.Title;

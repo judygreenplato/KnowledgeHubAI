@@ -1,11 +1,13 @@
+using KnowledgeHub.API.Middlewares;
+using KnowledgeHub.Application.Interfaces;
 using KnowledgeHub.Infrastructure.Persistence;
-using Microsoft.EntityFrameworkCore;
+using KnowledgeHub.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-using KnowledgeHub.Application.Interfaces;
-using KnowledgeHub.Infrastructure.Services;
+
 namespace KnowledgeHub.API
 {
     public class Program
@@ -88,6 +90,7 @@ namespace KnowledgeHub.API
             }
 
             app.UseHttpsRedirection();
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
             app.UseAuthentication();
             app.UseAuthorization();
 
