@@ -13,6 +13,9 @@ public class ArticleResponse
 
     public string Content { get; set; } = string.Empty;
 
+    public string Summary { get; set; } = string.Empty;
+
+
     public bool IsPublished { get; set; }
 
     public Guid CategoryId { get; set; }

@@ -34,6 +34,7 @@ public class ArticleService : IArticleService
             Id = Guid.NewGuid(),
             Title = request.Title,
             Content = request.Content,
+            Summary = GenerateSummary(request.Content,request.Summary),
             CategoryId = request.CategoryId,
             CreatedByUserId = userId,
             CreatedAtUtc = DateTime.UtcNow,
@@ -49,6 +50,7 @@ public class ArticleService : IArticleService
             Id = article.Id,
             Title = article.Title,
             Content = article.Content,
+            Summary = article.Summary,
             CreatedAtUtc = article.CreatedAtUtc
         };
     }
@@ -67,7 +69,8 @@ public class ArticleService : IArticleService
                 Id = a.Id,
                 Title = a.Title,
                 Content = a.Content,
-                IsPublished=a.IsPublished,
+                Summary = a.Summary,
+                IsPublished =a.IsPublished,
                 CategoryId=a.CategoryId,
                 CreatedAtUtc = a.CreatedAtUtc
             })
@@ -125,7 +128,8 @@ public class ArticleService : IArticleService
         string? search)
     {
         var query = _dbContext.Articles
-            .Where(a => a.IsPublished);
+        .Where(a => a.IsPublished);
+
 
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -143,6 +147,7 @@ public class ArticleService : IArticleService
                 Id = a.Id,
                 Title = a.Title,
                 Content = a.Content,
+                Summary= a.Summary,
                 IsPublished = a.IsPublished,
                 CategoryId = a.CategoryId,
                 CreatedAtUtc = a.CreatedAtUtc
@@ -166,6 +171,7 @@ public class ArticleService : IArticleService
             Id = article.Id,
             Title = article.Title,
             Content = article.Content,
+            Summary = article.Summary,
             IsPublished = article.IsPublished,
             CategoryId = article.CategoryId,
             CreatedAtUtc = article.CreatedAtUtc
@@ -192,6 +198,7 @@ public class ArticleService : IArticleService
         article.Title = request.Title;
         article.Content = request.Content;
         article.CategoryId = request.CategoryId;
+        article.Summary = GenerateSummary(request.Content,request.Summary);
         article.UpdatedAtUtc = DateTime.UtcNow;
 
         await _dbContext.SaveChangesAsync();
@@ -201,9 +208,23 @@ public class ArticleService : IArticleService
             Id = article.Id,
             Title = article.Title,
             Content = article.Content,
+            Summary = article.Summary,
             CategoryId = article.CategoryId,
             CreatedAtUtc = article.CreatedAtUtc
             
         };
+    }
+    private static string GenerateSummary(
+    string content,
+    string? summary)
+    {
+        if (!string.IsNullOrWhiteSpace(summary))
+        {
+            return summary;
+        }
+
+        return content.Substring(
+            0,
+            Math.Min(100, content.Length));
     }
 }

@@ -13,6 +13,8 @@ public class Article
 
     public string Content { get; set; } = string.Empty;
 
+    public string Summary { get; set; } = string.Empty;
+
     public DateTime CreatedAtUtc { get; set; }
 
     public Guid CreatedByUserId { get; set; }
@@ -23,4 +25,6 @@ public class Article
     public Guid CategoryId { get; set; }
 
     public Category Category { get; set; } = null!;
+
+   
 }
