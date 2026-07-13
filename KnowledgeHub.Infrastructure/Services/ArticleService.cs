@@ -4,6 +4,7 @@ using KnowledgeHub.Domain.Entities;
 using KnowledgeHub.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using KnowledgeHub.Application.Exceptions;
+using  AutoMapper;
 
 namespace KnowledgeHub.Infrastructure.Services;
 
@@ -12,14 +13,17 @@ public class ArticleService : IArticleService
     private readonly AppDbContext _dbContext;
     private readonly ICurrentUserService _currentUserService;
     private readonly IArticleAuthorizationService _authorizationService;
+    private readonly IMapper _mapper;
     public ArticleService(
         AppDbContext dbContext,
         ICurrentUserService currentUserService,
-        IArticleAuthorizationService authorizationService)
+        IArticleAuthorizationService authorizationService,
+        IMapper mapper)
     {
         _dbContext = dbContext;
         _currentUserService = currentUserService;
         _authorizationService = authorizationService;
+        _mapper = mapper;
     }
 
     public async Task<ArticleResponse> CreateAsync(
@@ -45,14 +49,7 @@ public class ArticleService : IArticleService
 
         await _dbContext.SaveChangesAsync();
 
-        return new ArticleResponse
-        {
-            Id = article.Id,
-            Title = article.Title,
-            Content = article.Content,
-            Summary = article.Summary,
-            CreatedAtUtc = article.CreatedAtUtc
-        };
+       return _mapper.Map<ArticleResponse>(article);
     }
 
     public async Task<List<ArticleResponse>>
@@ -61,20 +58,12 @@ public class ArticleService : IArticleService
         var userId =
             _currentUserService.UserId!.Value;
 
-        return await _dbContext.Articles
+       var articles= await _dbContext.Articles
             .Where(a => a.CreatedByUserId == userId)
             .OrderByDescending(a => a.CreatedAtUtc)
-            .Select(a => new ArticleResponse
-            {
-                Id = a.Id,
-                Title = a.Title,
-                Content = a.Content,
-                Summary = a.Summary,
-                IsPublished =a.IsPublished,
-                CategoryId=a.CategoryId,
-                CreatedAtUtc = a.CreatedAtUtc
-            })
             .ToListAsync();
+        return _mapper.Map<List<ArticleResponse>>(articles);
+            
     }
 
     public async Task PublishAsync(Guid articleId)
@@ -138,21 +127,13 @@ public class ArticleService : IArticleService
                 a.Content.Contains(search));
         }
 
-        return await query
-            .OrderByDescending(a => a.CreatedAtUtc)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(a => new ArticleResponse
-            {
-                Id = a.Id,
-                Title = a.Title,
-                Content = a.Content,
-                Summary= a.Summary,
-                IsPublished = a.IsPublished,
-                CategoryId = a.CategoryId,
-                CreatedAtUtc = a.CreatedAtUtc
-            })
-            .ToListAsync();
+        var articles = await query
+             .OrderByDescending(a => a.CreatedAtUtc)
+             .Skip((page - 1) * pageSize)
+             .Take(pageSize).ToListAsync();
+        return _mapper.Map<List<ArticleResponse>>(
+    articles);
+
     }
     public async Task<ArticleResponse>
     GetByIdAsync(Guid articleId)
@@ -166,16 +147,8 @@ public class ArticleService : IArticleService
             throw new NotFoundException("Article not found");
         }
 
-        return new ArticleResponse
-        {
-            Id = article.Id,
-            Title = article.Title,
-            Content = article.Content,
-            Summary = article.Summary,
-            IsPublished = article.IsPublished,
-            CategoryId = article.CategoryId,
-            CreatedAtUtc = article.CreatedAtUtc
-        };
+        return _mapper.Map<ArticleResponse>(
+     article);
     }
     public async Task<ArticleResponse> UpdateAsync(
     Guid articleId,
@@ -203,16 +176,7 @@ public class ArticleService : IArticleService
 
         await _dbContext.SaveChangesAsync();
 
-        return new ArticleResponse
-        {
-            Id = article.Id,
-            Title = article.Title,
-            Content = article.Content,
-            Summary = article.Summary,
-            CategoryId = article.CategoryId,
-            CreatedAtUtc = article.CreatedAtUtc
-            
-        };
+        return _mapper.Map<ArticleResponse>(article);
     }
     private static string GenerateSummary(
     string content,
