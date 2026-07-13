@@ -49,6 +49,19 @@ namespace KnowledgeHub.API
                 });
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddHttpContextAccessor();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    "Frontend",
+                    policy =>
+                    {
+                        policy
+                            .AllowAnyHeader()
+                            .AllowAnyMethod()
+                            .WithOrigins(
+                                "http://localhost:5173");
+                    });
+            });
             builder.Services.AddAutoMapper(typeof(ArticleProfile));
             builder.Services.AddScoped< ICurrentUserService, CurrentUserService>();
             builder.Services.AddScoped< IArticleAuthorizationService, ArticleAuthorizationService>();
@@ -94,6 +107,7 @@ namespace KnowledgeHub.API
 
             app.UseHttpsRedirection();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseCors("Frontend");
             app.UseAuthentication();
             app.UseAuthorization();
 
