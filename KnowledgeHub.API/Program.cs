@@ -1,6 +1,9 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using KnowledgeHub.API.Middlewares;
 using KnowledgeHub.Application.Interfaces;
 using KnowledgeHub.Application.Mappings;
+using KnowledgeHub.Application.Validators;
 using KnowledgeHub.Infrastructure.Persistence;
 using KnowledgeHub.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -9,7 +12,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
-
 namespace KnowledgeHub.API
 {
     public class Program
@@ -63,6 +65,8 @@ namespace KnowledgeHub.API
                     });
             });
             builder.Services.AddAutoMapper(typeof(ArticleProfile));
+            builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.AddValidatorsFromAssemblyContaining<CreateArticleRequestValidator>();
             builder.Services.AddScoped< ICurrentUserService, CurrentUserService>();
             builder.Services.AddScoped< IArticleAuthorizationService, ArticleAuthorizationService>();
             builder.Services.AddScoped<IArticleService,ArticleService>();
