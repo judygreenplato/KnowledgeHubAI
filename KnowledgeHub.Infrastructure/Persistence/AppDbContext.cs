@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<Article> Articles => Set<Article>();
 
     public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Document> Documents => Set<Document>();
 }
 
 

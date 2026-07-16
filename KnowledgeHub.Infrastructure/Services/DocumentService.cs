@@ -1,0 +1,74 @@
+﻿using AutoMapper;
+using KnowledgeHub.Application.DTOs;
+using KnowledgeHub.Application.Interfaces;
+using KnowledgeHub.Domain.Entities;
+using KnowledgeHub.Infrastructure.Persistence;
+using Microsoft.AspNetCore.Http;
+
+namespace KnowledgeHub.Infrastructure.Services;
+
+public class DocumentService : IDocumentService
+{
+    private readonly AppDbContext _dbContext;
+    private readonly ICurrentUserService _currentUserService;
+    private readonly IMapper _mapper;
+
+    public DocumentService(
+        AppDbContext dbContext,
+        ICurrentUserService currentUserService,
+        IMapper mapper)
+    {
+        _dbContext = dbContext;
+        _currentUserService = currentUserService;
+        _mapper = mapper;
+    }
+
+    public async Task<DocumentResponse>
+        UploadAsync(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            throw new Exception("No file uploaded.");
+        }
+
+        var uploadsFolder =
+            Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "Uploads");
+
+        Directory.CreateDirectory(uploadsFolder);
+
+        var storedFileName =
+            $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+
+        var filePath =
+            Path.Combine(
+                uploadsFolder,
+                storedFileName);
+        using (var stream =
+              new FileStream(
+                  filePath,
+                  FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var document = new Document
+        {
+            Id = Guid.NewGuid(),
+            FileName = file.FileName,
+            StoredFileName = storedFileName,
+            ContentType = file.ContentType,
+            FileSize = file.Length,
+            UploadedAtUtc = DateTime.UtcNow,
+            UploadedByUserId =
+                _currentUserService.UserId!.Value
+        };
+
+        _dbContext.Documents.Add(document);
+
+        await _dbContext.SaveChangesAsync();
+
+        return _mapper.Map<DocumentResponse>(document);
+    }
+}
