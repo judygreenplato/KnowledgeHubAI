@@ -69,9 +69,10 @@ namespace KnowledgeHub.API
             builder.Services.AddValidatorsFromAssemblyContaining<CreateArticleRequestValidator>();
             builder.Services.AddScoped< ICurrentUserService, CurrentUserService>();
             builder.Services.AddScoped< IArticleAuthorizationService, ArticleAuthorizationService>();
-            builder.Services.AddScoped<IArticleService,ArticleService>();
-            builder.Services.AddScoped<IDocumentService, DocumentService>();
-            builder.Services.AddScoped<PdfTextExtractor>();
+            builder.Services.AddScoped< IArticleService,ArticleService>();
+            builder.Services.AddScoped< IDocumentService, DocumentService>();
+            builder.Services.AddScoped< PdfTextExtractor>();
+            builder.Services.AddScoped< ChunkingService>();
             builder.Services.AddSwaggerGen(options =>
             {
                 options.AddSecurityDefinition("Bearer",

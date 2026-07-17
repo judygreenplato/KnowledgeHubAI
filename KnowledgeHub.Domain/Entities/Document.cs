@@ -24,4 +24,6 @@ public class Document
     public Guid UploadedByUserId { get; set; }
 
     public User UploadedByUser { get; set; } = null!;
+    public ICollection<DocumentChunk> Chunks{ get; set; } = new List<DocumentChunk>();
+
 }
