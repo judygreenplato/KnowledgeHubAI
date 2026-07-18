@@ -5,6 +5,7 @@ using KnowledgeHub.Domain.Entities;
 using KnowledgeHub.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace KnowledgeHub.Infrastructure.Services;
 
@@ -15,19 +16,23 @@ public class DocumentService : IDocumentService
     private readonly IMapper _mapper;
     private readonly PdfTextExtractor _pdfTextExtractor;
     private readonly ChunkingService _chunkingService;
+    private readonly IOpenAIService _openAIService;
 
     public DocumentService(
         AppDbContext dbContext,
         ICurrentUserService currentUserService,
         IMapper mapper,
         PdfTextExtractor pdfTextExtractor,
-        ChunkingService chunkingService)
+        ChunkingService chunkingService,
+        IOpenAIService openAIService
+        )
     {
         _dbContext = dbContext;
         _currentUserService = currentUserService;
         _mapper = mapper;
         _pdfTextExtractor = pdfTextExtractor;
         _chunkingService = chunkingService;
+        _openAIService = openAIService;
     }
 
     public async Task<DocumentResponse>
@@ -89,19 +94,39 @@ public class DocumentService : IDocumentService
 
         foreach (var chunk in chunks)
         {
-            _dbContext.DocumentChunks.Add(
-                new DocumentChunk
-                {
-                    Id = Guid.NewGuid(),
-                    DocumentId = document.Id,
-                    ChunkIndex = index++,
-                    Content = chunk
-                });
+            var documentChunk = new DocumentChunk
+            {
+                Id = Guid.NewGuid(),
+                DocumentId = document.Id,
+                ChunkIndex = index++,
+                Content = chunk
+            };
+
+            _dbContext.DocumentChunks.Add(documentChunk);
+
+
+           var embedding =
+                await _openAIService
+                    .CreateEmbeddingAsync(chunk);
+
+
+             _dbContext.DocumentEmbeddings.Add(
+            new DocumentEmbedding
+            {
+                Id = Guid.NewGuid(),
+
+                DocumentChunkId =
+                    documentChunk.Id,
+
+                EmbeddingJson =
+                    JsonSerializer.Serialize(
+                        embedding)
+            });
         }
 
         await _dbContext.SaveChangesAsync();
-
-        var query = _dbContext.DocumentChunks.ToListAsync();
+        //var query = _dbContext.DocumentChunks.ToList();
+        var query= _dbContext.DocumentEmbeddings.ToList();
 
         return _mapper.Map<DocumentResponse>(document);
     }

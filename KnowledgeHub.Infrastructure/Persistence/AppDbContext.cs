@@ -21,6 +21,8 @@ public class AppDbContext : DbContext
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Document> Documents => Set<Document>();
     public DbSet<DocumentChunk> DocumentChunks => Set<DocumentChunk>();
+    public DbSet<DocumentEmbedding> DocumentEmbeddings => Set<DocumentEmbedding>();
+   
 
 }
 
