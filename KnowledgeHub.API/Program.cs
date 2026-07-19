@@ -73,6 +73,8 @@ namespace KnowledgeHub.API
             builder.Services.AddScoped< IDocumentService, DocumentService>();
             builder.Services.AddScoped< PdfTextExtractor>();
             builder.Services.AddScoped< ChunkingService>();
+            builder.Services.AddScoped<SimilarityService>();
+            builder.Services.AddScoped<SemanticSearchService>();
             builder.Services.AddScoped<IOpenAIService,OpenAIService>();
             builder.Services.AddSwaggerGen(options =>
             {

@@ -14,4 +14,7 @@ public class DocumentEmbedding
 
     public string EmbeddingJson { get; set; }
         = string.Empty;
+
+    public DocumentChunk DocumentChunk { get; set; }
+       = null!;
 }

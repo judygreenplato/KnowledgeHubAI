@@ -14,6 +14,16 @@ public class AppDbContext : DbContext
         : base(options)
     {
     }
+    protected override void OnModelCreating(
+    ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<DocumentEmbedding>()
+            .HasOne(x => x.DocumentChunk)
+            .WithMany()
+            .HasForeignKey(x => x.DocumentChunkId);
+    }
 
     public DbSet<User> Users => Set<User>();
     public DbSet<Article> Articles => Set<Article>();
