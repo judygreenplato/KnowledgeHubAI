@@ -5,4 +5,7 @@ public interface IDocumentService
 {
     Task<DocumentResponse> UploadAsync(
         IFormFile file);
+
+    Task<List<DocumentListItemDto>>
+    GetDocumentsAsync();
 }

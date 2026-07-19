@@ -1,4 +1,5 @@
-﻿using KnowledgeHub.Application.Interfaces;
+﻿using KnowledgeHub.Application.DTOs;
+using KnowledgeHub.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,5 +28,17 @@ public class DocumentsController : ControllerBase
                 .UploadAsync(file);
 
         return Ok(result);
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<
+    List<DocumentListItemDto>>>
+    GetDocuments()
+    {
+        var documents =
+            await _documentService
+                .GetDocumentsAsync();
+
+        return Ok(documents);
     }
 }

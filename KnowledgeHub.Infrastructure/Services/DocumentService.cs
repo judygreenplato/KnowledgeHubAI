@@ -130,4 +130,28 @@ public class DocumentService : IDocumentService
 
         return _mapper.Map<DocumentResponse>(document);
     }
+
+    public async Task<List<DocumentListItemDto>>
+    GetDocumentsAsync()
+    {
+        return await _dbContext
+            .Documents
+            .OrderByDescending(
+                x => x.UploadedAtUtc)
+            .Select(
+                x => new DocumentListItemDto
+                {
+                    Id = x.Id,
+
+                    FileName =
+                        x.FileName,
+
+                    FileSize =
+                        x.FileSize,
+
+                    UploadedAtUtc =
+                        x.UploadedAtUtc
+                })
+            .ToListAsync();
+    }
 }

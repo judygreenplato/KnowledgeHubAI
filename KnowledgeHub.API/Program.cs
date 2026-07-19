@@ -71,6 +71,7 @@ namespace KnowledgeHub.API
             builder.Services.AddScoped< IArticleAuthorizationService, ArticleAuthorizationService>();
             builder.Services.AddScoped< IArticleService,ArticleService>();
             builder.Services.AddScoped< IDocumentService, DocumentService>();
+            builder.Services.AddScoped<DashboardService>();
             builder.Services.AddScoped< PdfTextExtractor>();
             builder.Services.AddScoped< ChunkingService>();
             builder.Services.AddScoped<SimilarityService>();
