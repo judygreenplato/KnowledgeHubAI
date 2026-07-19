@@ -11,4 +11,8 @@ public interface IOpenAIService
     Task<List<float>>
         CreateEmbeddingAsync(
             string text);
+
+    Task<string> GenerateAnswerAsync(
+    string question,
+    string context);
 }

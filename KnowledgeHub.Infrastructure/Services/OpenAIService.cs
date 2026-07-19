@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using OpenAI;
 using OpenAI.Embeddings;
 using System.Linq;
+using OpenAI.Chat;
 
 public class OpenAIService
     : IOpenAIService
@@ -37,4 +38,55 @@ public class OpenAIService
             .ToArray()
             .ToList();
     }
+    public async Task<string>
+    GenerateAnswerAsync(
+        string question,
+        string context)
+{
+    var chatClient =
+        _client.GetChatClient(
+            "gpt-4o-mini");
+
+    var messages =
+        new List<ChatMessage>
+        {
+            ChatMessage.CreateSystemMessage(
+                """
+                You are a helpful assistant.
+
+                Answer ONLY using the
+                provided context.
+
+                If the answer is not
+                available in the context,
+                say:
+
+                "I could not find that
+                information in the documents."
+                """
+            ),
+
+            ChatMessage.CreateUserMessage(
+                $"""
+                Context:
+
+                {context}
+
+                Question:
+
+                {question}
+                """
+            )
+        };
+
+    var result =
+        await chatClient
+            .CompleteChatAsync(
+                messages);
+
+    return result
+        .Value
+        .Content[0]
+        .Text;
+}
 }

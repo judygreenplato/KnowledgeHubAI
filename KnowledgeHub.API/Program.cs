@@ -76,6 +76,7 @@ namespace KnowledgeHub.API
             builder.Services.AddScoped<SimilarityService>();
             builder.Services.AddScoped<SemanticSearchService>();
             builder.Services.AddScoped<IOpenAIService,OpenAIService>();
+            builder.Services.AddScoped<RagService>();
             builder.Services.AddSwaggerGen(options =>
             {
                 options.AddSecurityDefinition("Bearer",
