@@ -1,41 +1,84 @@
-import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import ArticlesPage from "./pages/ArticlesPage";
 
-function App() {
+import { Routes, Route }
+from "react-router-dom";
 
+import ArticlesPage
+from "./pages/ArticlesPage";
+
+import LoginPage
+from "./pages/LoginPage";
+
+import RegisterPage
+from "./pages/RegisterPage";
+
+import DocumentsPage
+from "./pages/DocumentsPage";
+
+import AskAIPage
+from "./pages/AskAIPage";
+
+import DashboardPage
+from "./pages/DashboardPage";
+
+function App()
+{
     return (
-   <>
-      <Navbar />
-
-      <div className="container mt-4">
-
+     <>
+            <Navbar />
         <Routes>
 
-          <Route
-            path="/"
-            element={<ArticlesPage />}
-          />
+            <Route
+                path="/"
+                element={
+                    <DashboardPage />
+                }
+            />
 
-          <Route
-            path="/documents"
-            element={<h2>Documents Page</h2>}
-          />
+             <Route
+                path="/dashboard"
+                element={
+                    <DashboardPage />
+                }
+            />
 
-          <Route
-            path="/ask-ai"
-            element={<h2>Ask AI Page</h2>}
-          />
+            <Route
+                path="/articles"
+                element={
+                    <ArticlesPage />
+                }
+            />
 
-          <Route
-            path="/login"
-            element={<h2>Login Page</h2>}
-          />
+            <Route
+                path="/documents"
+                element={
+                    <DocumentsPage />
+                }
+            />
+
+            <Route
+                path="/ask-ai"
+                element={
+                    <AskAIPage />
+                }
+            />
+
+            <Route
+                path="/login"
+                element={
+                    <LoginPage />
+                }
+            />
+
+            <Route
+                path="/register"
+                element={
+                    <RegisterPage />
+                }
+            />
 
         </Routes>
-
-      </div>
-    </>
+        </>
     );
 }
 

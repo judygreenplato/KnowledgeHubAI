@@ -1,5 +1,10 @@
 ﻿using KnowledgeHub.Application.DTOs;
 using KnowledgeHub.Application.Interfaces;
+using KnowledgeHub.Domain.Entities;
+using KnowledgeHub.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using KnowledgeHub.Application.Exceptions;
+using AutoMapper;
 
 namespace KnowledgeHub.Infrastructure.Services;
 
@@ -27,7 +32,7 @@ public class RagService
             openAIService;
     }
 
-    public async Task<string>
+    public async Task<ChatResponse>
         AskAsync(
             string question)
     {
@@ -42,10 +47,22 @@ public class RagService
                 chunks.Select(
                     x => x.Content));
 
-        return await
-            _openAIService
-                .GenerateAnswerAsync(
-                    question,
-                    context);
+        var answer =
+        await _openAIService
+            .GenerateAnswerAsync(
+                question,
+                context);
+
+        return new ChatResponse
+        {
+            Answer = answer,
+
+            Sources =
+                chunks
+                    .Select(x => x.FileName)
+                    .Distinct()
+                    .ToList()
+        };
+        
     }
 }

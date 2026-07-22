@@ -1,11 +1,13 @@
 ﻿using KnowledgeHub.Application.DTOs;
 using KnowledgeHub.Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KnowledgeHub.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ChatController
     : ControllerBase
 {
@@ -25,15 +27,12 @@ public class ChatController
         Ask(
             ChatRequest request)
     {
-        var answer =
+        var response =
             await _ragService
                 .AskAsync(
                     request.Question);
 
-        return Ok(
-            new ChatResponse
-            {
-                Answer = answer
-            });
+
+        return Ok(response);
     }
 }

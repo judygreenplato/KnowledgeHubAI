@@ -40,6 +40,7 @@ public class SemanticSearchService
             await _dbContext
                 .DocumentEmbeddings
                 .Include(x => x.DocumentChunk)
+                .ThenInclude(x => x.Document)
                 .ToListAsync();
 
         var embeddingCount = embeddings.Count;
@@ -68,10 +69,15 @@ public class SemanticSearchService
                         embedding
                             .DocumentChunk
                             .Content,
+                    FileName =
+                       embedding.DocumentChunk
+                     .Document
+                     .FileName,
 
                     Score = score
                 });
         }
+       
 
         return results
             .OrderByDescending(

@@ -11,7 +11,7 @@ public class ChunkingService
     public List<string>
         CreateChunks(
             string text,
-            int chunkSize = 2000)
+            int chunkSize = 1000)
     {
         var chunks = new List<string>();
 

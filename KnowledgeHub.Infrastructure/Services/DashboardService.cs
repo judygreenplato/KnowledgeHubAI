@@ -37,7 +37,11 @@ public class DashboardService
             Users =
                 await _dbContext
                     .Users
-                    .CountAsync()
+                    .CountAsync(),
+
+            Embeddings = await _dbContext
+            .DocumentEmbeddings 
+            .CountAsync()
         };
     }
 }

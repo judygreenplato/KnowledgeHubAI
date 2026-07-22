@@ -11,4 +11,5 @@ public class DashboardDto
     public int Documents { get; set; }
 
     public int Users { get; set; }
+    public int Embeddings { get; set; }
 }
