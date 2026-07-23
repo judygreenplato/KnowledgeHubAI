@@ -35,6 +35,9 @@ KnowledgeHubAI is an AI-powered knowledge management system built with ASP.NET C
 - OpenAI Embeddings
 - Semantic Search 
 - Retrieval-Augmented Generation (RAG) 
+- AI Chat Interface
+- Context-aware AI Answers
+- Source Document References
 
 ---
 
@@ -259,8 +262,6 @@ https://localhost:xxxx/swagger
 
 # Future Improvements
 
-- Semantic Search
-- Ask AI Chat Interface
 - Redis Caching
 - RabbitMQ
 - Docker
