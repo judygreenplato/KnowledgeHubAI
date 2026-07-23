@@ -1,6 +1,8 @@
-﻿namespace KnowledgeHub.Infrastructure.Services;
+﻿using KnowledgeHub.Application.Interfaces;
 
-public class SimilarityService
+namespace KnowledgeHub.Infrastructure.Services;
+
+public class SimilarityService : ISimilarityService
 {
     public double CosineSimilarity(
         List<float> vectorA,

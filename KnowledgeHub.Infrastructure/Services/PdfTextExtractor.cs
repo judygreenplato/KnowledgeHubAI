@@ -1,8 +1,9 @@
-﻿using UglyToad.PdfPig;
+﻿using KnowledgeHub.Application.Interfaces;
+using UglyToad.PdfPig;
 
 namespace KnowledgeHub.Infrastructure.Services;
 
-public class PdfTextExtractor
+public class PdfTextExtractor : IPdfTextExtractor
 {
 
     public string ExtractText(string pdfPath)

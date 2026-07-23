@@ -1,4 +1,5 @@
 ﻿using KnowledgeHub.Application.DTOs;
+using KnowledgeHub.Application.Interfaces;
 using KnowledgeHub.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,11 +13,11 @@ public class ChatController
     : ControllerBase
 {
     private readonly
-        RagService
+        IRagService
         _ragService;
 
     public ChatController(
-        RagService ragService)
+        IRagService ragService)
     {
         _ragService =
             ragService;

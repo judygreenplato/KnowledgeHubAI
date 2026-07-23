@@ -1,10 +1,11 @@
 ﻿using KnowledgeHub.Application.DTOs;
+using KnowledgeHub.Application.Interfaces;
 using KnowledgeHub.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 
 namespace KnowledgeHub.Infrastructure.Services;
 
-public class DashboardService
+public class DashboardService : IDashboardService
 {
     private readonly AppDbContext _dbContext;
 

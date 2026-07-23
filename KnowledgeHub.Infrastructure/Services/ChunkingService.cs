@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KnowledgeHub.Application.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace KnowledgeHub.Infrastructure.Services;
 
-public class ChunkingService
+public class ChunkingService : IChunkingService
 {
     public List<string>
         CreateChunks(

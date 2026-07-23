@@ -8,10 +8,10 @@ using AutoMapper;
 
 namespace KnowledgeHub.Infrastructure.Services;
 
-public class RagService
+public class RagService : IRagService
 {
     private readonly
-        SemanticSearchService
+        ISemanticSearchService
         _semanticSearchService;
 
     private readonly
@@ -19,7 +19,7 @@ public class RagService
         _openAIService;
 
     public RagService(
-        SemanticSearchService
+        ISemanticSearchService
             semanticSearchService,
 
         IOpenAIService

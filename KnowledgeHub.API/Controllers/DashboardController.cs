@@ -1,4 +1,5 @@
-﻿using KnowledgeHub.Infrastructure.Services;
+﻿using KnowledgeHub.Application.Interfaces;
+using KnowledgeHub.Infrastructure.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KnowledgeHub.API.Controllers;
@@ -8,11 +9,11 @@ namespace KnowledgeHub.API.Controllers;
 public class DashboardController
     : ControllerBase
 {
-    private readonly DashboardService
+    private readonly IDashboardService
         _dashboardService;
 
     public DashboardController(
-        DashboardService dashboardService)
+        IDashboardService dashboardService)
     {
         _dashboardService =
             dashboardService;

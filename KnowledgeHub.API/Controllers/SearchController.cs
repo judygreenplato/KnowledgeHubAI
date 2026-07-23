@@ -1,4 +1,5 @@
 ﻿using KnowledgeHub.Application.DTOs;
+using KnowledgeHub.Application.Interfaces;
 using KnowledgeHub.Infrastructure.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,10 @@ namespace KnowledgeHub.API.Controllers;
 [Authorize]
 public class SearchController : ControllerBase
 {
-    private readonly SemanticSearchService _semanticSearchService;
+    private readonly ISemanticSearchService _semanticSearchService;
 
     public SearchController(
-        SemanticSearchService semanticSearchService)
+        ISemanticSearchService semanticSearchService)
     {
         _semanticSearchService = semanticSearchService;
     }

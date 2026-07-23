@@ -6,18 +6,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KnowledgeHub.Infrastructure.Services;
 
-public class SemanticSearchService
+public class SemanticSearchService :ISemanticSearchService
 {
     private readonly AppDbContext _dbContext;
 
     private readonly IOpenAIService _openAIService;
 
-    private readonly SimilarityService _similarityService;
+    private readonly ISimilarityService _similarityService;
 
     public SemanticSearchService(
         AppDbContext dbContext,
         IOpenAIService openAIService,
-        SimilarityService similarityService)
+        ISimilarityService similarityService)
     {
         _dbContext = dbContext;
 

@@ -14,16 +14,16 @@ public class DocumentService : IDocumentService
     private readonly AppDbContext _dbContext;
     private readonly ICurrentUserService _currentUserService;
     private readonly IMapper _mapper;
-    private readonly PdfTextExtractor _pdfTextExtractor;
-    private readonly ChunkingService _chunkingService;
+    private readonly IPdfTextExtractor _pdfTextExtractor;
+    private readonly IChunkingService _chunkingService;
     private readonly IOpenAIService _openAIService;
 
     public DocumentService(
         AppDbContext dbContext,
         ICurrentUserService currentUserService,
         IMapper mapper,
-        PdfTextExtractor pdfTextExtractor,
-        ChunkingService chunkingService,
+        IPdfTextExtractor pdfTextExtractor,
+        IChunkingService chunkingService,
         IOpenAIService openAIService
         )
     {

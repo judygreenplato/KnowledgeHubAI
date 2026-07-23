@@ -71,11 +71,11 @@ namespace KnowledgeHub.API
             builder.Services.AddScoped< IArticleAuthorizationService, ArticleAuthorizationService>();
             builder.Services.AddScoped< IArticleService,ArticleService>();
             builder.Services.AddScoped< IDocumentService, DocumentService>();
-            builder.Services.AddScoped<DashboardService>();
-            builder.Services.AddScoped< PdfTextExtractor>();
-            builder.Services.AddScoped< ChunkingService>();
-            builder.Services.AddScoped<SimilarityService>();
-            builder.Services.AddScoped<SemanticSearchService>();
+            builder.Services.AddScoped< IDashboardService, DashboardService>();
+            builder.Services.AddScoped<IPdfTextExtractor,PdfTextExtractor>();
+            builder.Services.AddScoped<IChunkingService,ChunkingService>();
+            builder.Services.AddScoped< ISimilarityService,SimilarityService>();
+            builder.Services.AddScoped<ISemanticSearchService,SemanticSearchService>();
             builder.Services.AddScoped<IOpenAIService,OpenAIService>();
             builder.Services.AddScoped<RagService>();
             builder.Services.AddSwaggerGen(options =>
