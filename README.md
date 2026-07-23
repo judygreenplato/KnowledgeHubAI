@@ -38,6 +38,34 @@ KnowledgeHubAI is an AI-powered knowledge management system built with ASP.NET C
 
 ---
 
+# 🖥️ Screenshots
+
+### KnowledgeHub Dashboard/home
+
+![KnowledgeHub Dashboard](screenshots/dashboard.png)
+
+### Articles
+
+![Articles](screenshots/articles.png)
+
+### Documents
+
+![Documents](screenshots/documents.png)
+
+### Ask AI - RAG
+
+![Ask AI](screenshots/ask-ai.png)
+
+### Login
+
+![Login](screenshots/login.png)
+
+### Register
+
+![Register](screenshots/register.png)
+
+---
+
 # 🏗 Architecture
 
 This project follows **Clean Architecture** principles.
