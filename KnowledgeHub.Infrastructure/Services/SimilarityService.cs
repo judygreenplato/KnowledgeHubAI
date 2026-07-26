@@ -8,6 +8,24 @@ public class SimilarityService : ISimilarityService
         List<float> vectorA,
         List<float> vectorB)
     {
+        if (vectorA == null)
+        {
+            throw new ArgumentNullException(
+                nameof(vectorA));
+        }
+
+        if (vectorB == null)
+        {
+            throw new ArgumentNullException(
+                nameof(vectorB));
+        }
+
+        if (vectorA.Count != vectorB.Count)
+        {
+            throw new ArgumentException(
+                "Vectors must have the same dimensions.");
+        }
+
         double dotProduct = 0;
 
         double magnitudeA = 0;
@@ -25,6 +43,15 @@ public class SimilarityService : ISimilarityService
             magnitudeB +=
                 vectorB[i] * vectorB[i];
         }
+
+        if (magnitudeA == 0 ||
+        magnitudeB == 0)
+        {
+            return 0;
+        }
+
+       
+       
 
         return dotProduct /
                (
