@@ -22,3 +22,24 @@ obj/
 
 # Uploaded Documents
 KnowledgeHub.API/Uploads/
+
+# -----------------------------
+# Python AI Agent
+# -----------------------------
+
+# Virtual environment
+KnowledgeHub.Agent/.venv/
+
+# Environment variables
+KnowledgeHub.Agent/.env
+
+# Python cache
+**/__pycache__/
+*.py[cod]
+
+# Pytest cache 
+.pytest_cache/
+
+# Coverage reports 
+.coverage
+htmlcov/
