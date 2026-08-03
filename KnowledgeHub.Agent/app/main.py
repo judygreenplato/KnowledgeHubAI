@@ -1,4 +1,7 @@
+
 from fastapi import FastAPI
+
+from app.api.chat import router as chat_router
 
 app = FastAPI(
     title="KnowledgeHub AI Agent",
@@ -6,9 +9,9 @@ app = FastAPI(
 )
 
 
-@app.get("/")
-def health_check():
-    return {
-        "status": "running",
-        "service": "KnowledgeHub AI Agent"
-    }
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
+
+app.include_router(chat_router)
