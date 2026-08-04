@@ -7,6 +7,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Integrations\**" />
+    <EmbeddedResource Remove="Integrations\**" />
+    <None Remove="Integrations\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Integrations\Python\PythonAgentService.cs" />
+    <Compile Include="Integrations\Python\PythonChatRequest.cs" />
+    <Compile Include="Integrations\Python\PythonChatResponse.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.11">
@@ -21,6 +33,11 @@
   <ItemGroup>
     <ProjectReference Include="..\KnowledgeHub.Application\KnowledgeHub.Application.csproj" />
     <ProjectReference Include="..\KnowledgeHub.Domain\KnowledgeHub.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="NewFolder1\" />
+    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>

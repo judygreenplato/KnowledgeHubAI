@@ -4,6 +4,7 @@ using KnowledgeHub.API.Middlewares;
 using KnowledgeHub.Application.Interfaces;
 using KnowledgeHub.Application.Mappings;
 using KnowledgeHub.Application.Validators;
+using KnowledgeHub.Infrastructure.Integrations.Python;
 using KnowledgeHub.Infrastructure.Persistence;
 using KnowledgeHub.Infrastructure.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -63,6 +64,10 @@ namespace KnowledgeHub.API
                             .WithOrigins(
                                 "http://localhost:5173");
                     });
+            });
+            builder.Services.AddHttpClient<IPythonAgentService, PythonAgentService>(client =>
+            {
+                client.BaseAddress = new Uri("http://localhost:8000");
             });
             builder.Services.AddAutoMapper(typeof(ArticleProfile));
             builder.Services.AddFluentValidationAutoValidation();

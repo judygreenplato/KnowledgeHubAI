@@ -16,4 +16,4 @@ def chat(request: ChatRequest):
 
     answer = agent_service.chat(request.question)
 
-    return ChatResponse(answer=answer)
+    return ChatResponse(answer=answer,sources=[])

@@ -12,15 +12,11 @@ namespace KnowledgeHub.API.Controllers;
 public class ChatController
     : ControllerBase
 {
-    private readonly
-        IRagService
-        _ragService;
+    private readonly IPythonAgentService _pythonAgentService;
 
-    public ChatController(
-        IRagService ragService)
+    public ChatController(IPythonAgentService pythonAgentService)
     {
-        _ragService =
-            ragService;
+        _pythonAgentService = pythonAgentService;
     }
 
     [HttpPost]
@@ -29,10 +25,8 @@ public class ChatController
             ChatRequest request)
     {
         var response =
-            await _ragService
-                .AskAsync(
-                    request.Question);
-
+    await _pythonAgentService
+        .AskAsync(request.Question);
 
         return Ok(response);
     }
