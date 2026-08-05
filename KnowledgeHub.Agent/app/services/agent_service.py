@@ -1,4 +1,6 @@
 from app.services.context_service import ContextService
+from app.services.decision_service import DecisionService
+from app.models.route import Route
 
 
 class AgentService:
@@ -6,30 +8,28 @@ class AgentService:
     def __init__(
         self,
         openai_service,
-        context_service: ContextService
+        context_service: ContextService,
+        decision_service: DecisionService
     ):
         self._openai_service = openai_service
         self._context_service = context_service
+        self._decision_service = decision_service
 
 
     async def chat(self, question: str):
 
-       
         context_response = await self._context_service.get_context(
             question
         )
 
 
-        
         chunks = context_response["chunks"]
 
 
-        
         context = "\n\n".join(
             chunk["content"]
             for chunk in chunks
         )
-
 
 
         answer = await self._openai_service.ask(
@@ -38,7 +38,6 @@ class AgentService:
         )
 
 
-       
         sources = list(
             dict.fromkeys(
                 chunk["fileName"]
@@ -47,7 +46,6 @@ class AgentService:
         )
 
 
-    
         return {
             "answer": answer,
             "sources": sources

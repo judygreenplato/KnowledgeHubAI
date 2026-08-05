@@ -11,7 +11,7 @@ class ContextService:
 
     async def get_context(self, question: str):
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(verify=False) as client:
 
             response = await client.post(
                 f"{settings.dotnet_api_url}/api/rag/context",
