@@ -18,6 +18,7 @@ public class RagController : ControllerBase
         _semanticSearchService = semanticSearchService;
     }
 
+    [AllowAnonymous]
     [HttpPost("context")]
     public async Task<ActionResult<ContextResponse>> GetContext(
         ContextRequest request)
