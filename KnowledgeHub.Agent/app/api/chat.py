@@ -11,7 +11,7 @@ router = APIRouter()
 # Create services
 openai_service = OpenAIService()
 context_service = ContextService()
-decision_service = DecisionService()
+decision_service = DecisionService(openai_service)
 
 agent_service = AgentService(
     openai_service,

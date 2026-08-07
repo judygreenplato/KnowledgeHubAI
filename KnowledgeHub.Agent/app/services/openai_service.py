@@ -50,6 +50,33 @@ class OpenAIService:
 
         return response.choices[0].message.content
 
+    async def ask_direct(
+        self,
+        question: str
+    ) -> str:
+        """
+        Answers the question without using RAG.
+        """
+
+        response = self._client.chat.completions.create(
+            model="gpt-4.1-mini",
+            messages=[
+                {
+                    "role": "system",
+                    "content":
+                    (
+                        "You are a helpful AI assistant."
+                    )
+                },
+                {
+                    "role": "user",
+                    "content": question
+                }
+            ]
+        )
+
+        return response.choices[0].message.content
+
     async def decide_route(
         self,
         question: str
@@ -75,9 +102,8 @@ class OpenAIService:
                         "Return ONLY one word:\n\n"
                         "RAG\n"
                         "DIRECT\n\n"
-                        "Choose RAG if uploaded documents are needed.\n"
-                        "Choose DIRECT if the question can be answered "
-                        "without uploaded documents."
+                        "Choose RAG if uploaded documents are required.\n"
+                        "Otherwise choose DIRECT."
                     )
                 },
                 {

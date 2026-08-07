@@ -1,6 +1,7 @@
+from app.models.route import Route
+
 from app.services.context_service import ContextService
 from app.services.decision_service import DecisionService
-from app.models.route import Route
 
 
 class AgentService:
@@ -11,17 +12,39 @@ class AgentService:
         context_service: ContextService,
         decision_service: DecisionService
     ):
+
         self._openai_service = openai_service
+
         self._context_service = context_service
+
         self._decision_service = decision_service
 
 
-    async def chat(self, question: str):
+    async def chat(
+        self,
+        question: str
+    ):
+
+        route = await self._decision_service.decide(
+            question
+        )
+
+
+        if route == Route.DIRECT:
+
+            answer = await self._openai_service.ask_direct(
+                question
+            )
+
+            return {
+                "answer": answer,
+                "sources": []
+            }
+
 
         context_response = await self._context_service.get_context(
             question
         )
-
 
         chunks = context_response["chunks"]
 
