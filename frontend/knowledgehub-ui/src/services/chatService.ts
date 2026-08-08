@@ -1,10 +1,12 @@
 import api from "../api/axios";
 
 import type { ChatResponse }
-    from "../models/chatResponse";
+from "../models/chatResponse";
+
 
 export async function askAI(
-    question: string)
+    question: string
+): Promise<ChatResponse>
 {
     const response =
         await api.post<ChatResponse>(

@@ -1,11 +1,10 @@
-import { useState }
-    from "react";
+import { useState } from "react";
 
 import { askAI }
-    from "../services/chatService";
+from "../services/chatService";
+
 
 function AskAIPage()
-
 {
     const [question,
         setQuestion] =
@@ -15,7 +14,8 @@ function AskAIPage()
         setAnswer] =
         useState("");
 
-         const [message, setMessage] =
+    const [message,
+        setMessage] =
         useState("");
 
     const [sources,
@@ -26,56 +26,71 @@ function AskAIPage()
         setLoading] =
         useState(false);
 
+
     async function handleAsk()
-{
-    const token =
-        localStorage.getItem(
-            "token");
-
-    if (!token)
     {
-        setMessage(
-            "Please login before using Ask AI.");
+        const token =
+            localStorage.getItem("token");
 
-        return;
+
+        if (!token)
+        {
+            setMessage(
+                "Please login before using Ask AI."
+            );
+
+            return;
+        }
+
+
+        if (!question.trim())
+        {
+            setMessage(
+                "Please enter a question."
+            );
+
+            return;
+        }
+
+
+        try
+        {
+            setLoading(true);
+
+            setMessage("");
+
+            setAnswer("");
+
+            setSources([]);
+
+
+            const result =
+                await askAI(question);
+
+
+            setAnswer(
+                result.answer
+            );
+
+            setSources(
+                result.sources
+            );
+        }
+        catch (error)
+        {
+            console.error(error);
+
+            setMessage(
+                "Failed to get answer."
+            );
+        }
+        finally
+        {
+            setLoading(false);
+        }
     }
 
-    if (!question.trim())
-    {
-        setMessage(
-            "Please enter a question.");
 
-        return;
-    }
-
-    try
-    {
-        setLoading(true);
-
-        setMessage("");
-
-        const result =
-            await askAI(
-                question);
-
-        setAnswer(
-            result.answer);
-
-        setSources(
-            result.sources);
-    }
-    catch (error)
-    {
-        console.error(error);
-
-        setMessage(
-            "Failed to get answer.");
-    }
-    finally
-    {
-        setLoading(false);
-    }
-}
     return (
         <div className="container">
 
@@ -84,23 +99,25 @@ function AskAIPage()
                 <div className="card-body">
 
                     <h2>
-                         Ask AI
+                        Ask AI
                     </h2>
-                 {
-    message &&
-    (
-        <div
-            className=
-            "alert alert-warning"
-        >
-            {message}
-        </div>
-    )
-}
-                    <p className="text-muted">
-                        Ask questions about
-                        uploaded documents.
+
+
+                    {message && (
+                        <div
+                            className=
+                            "alert alert-warning"
+                        >
+                            {message}
+                        </div>
+                    )}
+
+
+                    <p>
+                        Ask questions, get general answers, or ask about  uploaded documents.
+                
                     </p>
+
 
                     <textarea
                         className=
@@ -111,18 +128,17 @@ function AskAIPage()
                         value={question}
                         onChange={e =>
                             setQuestion(
-                                e.target.value)}
+                                e.target.value
+                            )
+                        }
                     />
+
 
                     <button
                         className=
                         "btn btn-primary"
-                        onClick={
-                            handleAsk
-                        }
-                        disabled={
-                            loading
-                        }
+                        onClick={handleAsk}
+                        disabled={loading}
                     >
                         {
                             loading
@@ -135,62 +151,62 @@ function AskAIPage()
 
             </div>
 
-            {
-                answer &&
-                (
+
+            {answer && (
+                <div
+                    className=
+                    "card shadow mt-4"
+                >
+
                     <div
                         className=
-                        "card shadow mt-4"
+                        "card-body"
                     >
 
-                        <div
-                            className=
-                            "card-body"
-                        >
+                        <h4>
+                            AI Answer
+                        </h4>
 
-                            <h4>
-                                AI Answer
-                            </h4>
+                        <hr />
 
-                            <hr />
+                        <p>
+                            {answer}
+                        </p>
 
-                            <p>
-                                {answer}
-                            </p>
 
-                            <h5>
-                                Sources
-                            </h5>
+                        {sources.length > 0 && (
+                            <>
+                                <h5>
+                                    Sources
+                                </h5>
 
-                            <ul
-                                className=
-                                "list-group"
-                            >
-                                {
-                                    sources.map(
-                                        source =>
-                                            (
-                                                <li
-                                                    key={
-                                                        source
-                                                    }
-                                                    className=
-                                                    "list-group-item"
-                                                >
-                                                    📄 {source}
-                                                </li>
-                                            ))
-                                }
-                            </ul>
-
-                        </div>
+                                <ul
+                                    className=
+                                    "list-group"
+                                >
+                                    {sources.map(
+                                        source => (
+                                            <li
+                                                key={source}
+                                                className=
+                                                "list-group-item"
+                                            >
+                                                📄 {source}
+                                            </li>
+                                        )
+                                    )}
+                                </ul>
+                            </>
+                        )}
 
                     </div>
-                )
-            }
+
+                </div>
+            )}
 
         </div>
     );
 }
+
 
 export default AskAIPage;
