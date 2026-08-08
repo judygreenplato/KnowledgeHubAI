@@ -1,65 +1,78 @@
-from app.models.route import Route
-
-from app.services.context_service import ContextService
-from app.services.decision_service import DecisionService
-
-
 class AgentService:
+    """
+    AI Agent responsible for deciding
+    which tool should handle the user's question.
+    """
 
     def __init__(
         self,
         openai_service,
-        context_service: ContextService,
-        decision_service: DecisionService
+        tools
     ):
-
         self._openai_service = openai_service
-
-        self._context_service = context_service
-
-        self._decision_service = decision_service
-
+        self._tools = tools
 
     async def chat(
         self,
         question: str
     ):
 
-        route = await self._decision_service.decide(
+        # Step 1:
+        # Ask OpenAI which tool should be used.
+        tool_name = await self._openai_service.choose_tool(
             question
         )
 
+        print(f"Selected Tool: {tool_name}")
 
-        if route == Route.DIRECT:
+        # Step 2:
+        # Find the selected tool.
+        selected_tool = next(
+            (
+                tool
+                for tool in self._tools
+                if tool.name == tool_name
+            ),
+            None
+        )
 
-            answer = await self._openai_service.ask_direct(
-                question
+        if selected_tool is None:
+            raise Exception(
+                f"Unknown tool: {tool_name}"
             )
 
+        # Step 3:
+        # Execute the selected tool.
+        result = await selected_tool.execute(
+            question
+        )
+
+        # -----------------------------------
+        # DIRECT ANSWER TOOL
+        # -----------------------------------
+
+        if tool_name == "direct_answer":
+
             return {
-                "answer": answer,
+                "answer": result,
                 "sources": []
             }
 
+        # -----------------------------------
+        # DOCUMENT SEARCH TOOL
+        # -----------------------------------
 
-        context_response = await self._context_service.get_context(
-            question
-        )
-
-        chunks = context_response["chunks"]
-
+        chunks = result["chunks"]
 
         context = "\n\n".join(
             chunk["content"]
             for chunk in chunks
         )
 
-
         answer = await self._openai_service.ask(
             question,
             context
         )
-
 
         sources = list(
             dict.fromkeys(
@@ -67,7 +80,6 @@ class AgentService:
                 for chunk in chunks
             )
         )
-
 
         return {
             "answer": answer,

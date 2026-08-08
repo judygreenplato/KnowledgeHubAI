@@ -20,7 +20,7 @@ class OpenAIService:
         context: str
     ) -> str:
         """
-        Generates an answer using the provided context.
+        Generates an answer using the provided document context.
         """
 
         response = self._client.chat.completions.create(
@@ -31,8 +31,8 @@ class OpenAIService:
                     "content":
                     (
                         "You are a helpful AI assistant.\n\n"
-                        "Answer the user's question ONLY using the provided context.\n"
-                        "If the answer cannot be found in the context, "
+                        "Answer ONLY using the provided document context.\n"
+                        "If the answer is not found in the context, "
                         "say that the information is not available "
                         "in the uploaded documents."
                     )
@@ -55,7 +55,7 @@ class OpenAIService:
         question: str
     ) -> str:
         """
-        Answers the question without using RAG.
+        Answers a general question without using uploaded documents.
         """
 
         response = self._client.chat.completions.create(
@@ -77,14 +77,17 @@ class OpenAIService:
 
         return response.choices[0].message.content
 
-    async def decide_route(
+    async def choose_tool(
         self,
         question: str
     ) -> str:
         """
-        Uses OpenAI to decide whether the question
-        requires document retrieval (RAG) or can be
-        answered directly.
+        Decide which tool should handle the user's question.
+
+        Returns ONLY one of:
+
+        search_documents
+        direct_answer
         """
 
         response = self._client.chat.completions.create(
@@ -95,15 +98,26 @@ class OpenAIService:
                     "role": "system",
                     "content":
                     (
-                        "You are an AI routing assistant.\n\n"
-                        "Your job is NOT to answer the user's question.\n"
-                        "Your only job is to decide whether the question "
-                        "requires information from uploaded documents.\n\n"
-                        "Return ONLY one word:\n\n"
-                        "RAG\n"
-                        "DIRECT\n\n"
-                        "Choose RAG if uploaded documents are required.\n"
-                        "Otherwise choose DIRECT."
+                        "You are an AI tool selection assistant.\n\n"
+
+                        "Your job is NOT to answer the user's question.\n\n"
+
+                        "Your ONLY job is to choose ONE tool.\n\n"
+
+                        "Available tools:\n\n"
+
+                        "search_documents\n"
+                        "direct_answer\n\n"
+
+                        "Choose 'search_documents' when the answer "
+                        "depends on uploaded documents.\n\n"
+
+                        "Choose 'direct_answer' when the question "
+                        "can be answered without uploaded documents.\n\n"
+
+                        "Return ONLY the tool name.\n"
+
+                        "Do not explain your decision."
                     )
                 },
                 {
