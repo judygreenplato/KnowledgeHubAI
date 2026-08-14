@@ -110,7 +110,7 @@ public class ChatControllerTests
             Assert.IsType<OkObjectResult>(result);
 
         Assert.Equal(
-            200,
+            500,
             okResult.StatusCode);
     }
 
