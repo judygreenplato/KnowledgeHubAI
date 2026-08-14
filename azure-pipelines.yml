@@ -1,0 +1,38 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+# Install .NET 8 SDK
+- task: UseDotNet@2
+  displayName: 'Install .NET 8 SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'
+
+# Restore NuGet packages
+- task: DotNetCoreCLI@2
+  displayName: 'Restore .NET dependencies'
+  inputs:
+    command: 'restore'
+    projects: 'KnowledgeHubAI.sln'
+
+# Build the solution
+- task: DotNetCoreCLI@2
+  displayName: 'Build .NET solution'
+  inputs:
+    command: 'build'
+    projects: 'KnowledgeHubAI.sln'
+    arguments: '--configuration Release --no-restore'
+
+# Run unit tests
+- task: DotNetCoreCLI@2
+  displayName: 'Run .NET unit tests'
+  inputs:
+    command: 'test'
+    projects: 'KnowledgeHub.Tests/KnowledgeHub.Tests.csproj'
+    arguments: '--configuration Release --no-build'
+    publishTestResults: true
