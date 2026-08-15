@@ -1,0 +1,29 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+- task: UsePythonVersion@0
+  displayName: 'Install Python 3.12'
+  inputs:
+    versionSpec: '3.12'
+
+- script: |
+    python --version
+    python -m pip --version
+  displayName: 'Verify Python installation'
+  workingDirectory: 'KnowledgeHub.Agent'
+
+- script: |
+    python -m pip install --upgrade pip
+    python -m pip install -r requirements.txt
+  displayName: 'Install Python dependencies'
+  workingDirectory: 'KnowledgeHub.Agent'
+
+- script: |
+    python -m pytest
+  displayName: 'Run Python unit tests'
+  workingDirectory: 'KnowledgeHub.Agent'
