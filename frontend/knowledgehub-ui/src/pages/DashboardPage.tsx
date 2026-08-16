@@ -18,11 +18,9 @@ function DashboardPage()
         setLoading] =
         useState(true);
 
-    useEffect(() =>
-    {
-        loadDashboard();
-    }, []);
-
+    
+useEffect(() =>
+{
     async function loadDashboard()
     {
         try
@@ -41,6 +39,10 @@ function DashboardPage()
             setLoading(false);
         }
     }
+
+    loadDashboard();
+}, []);
+
 
     if (loading)
     {

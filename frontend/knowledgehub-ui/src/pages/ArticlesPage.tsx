@@ -16,36 +16,44 @@ function ArticlesPage() {
         useState("");
 
     useEffect(() => {
-        loadArticles();
-    }, []);
+        let cancelled = false;
 
-    async function loadArticles() {
-        try {
-            setLoading(true);
+        getArticles()
+            .then(result => {
+                if (cancelled) {
+                    return;
+                }
 
-            const result =
-                await getArticles();
+                setArticles(result);
 
-            setArticles(result);
+                // Expand the first article
+                if (result.length > 0) {
+                    setExpandedArticleId(
+                        result[0].id
+                    );
+                }
+            })
+            .catch(error => {
+                if (cancelled) {
+                    return;
+                }
 
-            // Expand the first article
-            if (result.length > 0) {
-                setExpandedArticleId(
-                    result[0].id
+                console.error(error);
+
+                setError(
+                    "Unable to load articles."
                 );
-            }
-        }
-        catch (error) {
-            console.error(error);
+            })
+            .finally(() => {
+                if (!cancelled) {
+                    setLoading(false);
+                }
+            });
 
-            setError(
-                "Unable to load articles."
-            );
-        }
-        finally {
-            setLoading(false);
-        }
-    }
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
     function toggleArticle(
         articleId: string
@@ -201,7 +209,6 @@ function ArticlesPage() {
 
                                     </div>
 
-
                                     <div
                                         className=
                                         "card-body"
@@ -218,8 +225,8 @@ function ArticlesPage() {
                                                         style={{
                                                             whiteSpace:
                                                                 "pre-line",
-                                                                textAlign: 
-                                                                  "justify"
+                                                            textAlign:
+                                                                "justify"
                                                         }}
                                                     >
                                                         {
