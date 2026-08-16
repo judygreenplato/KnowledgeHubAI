@@ -10,27 +10,36 @@ steps:
 # .NET
 # ============================================================
 
+# Install .NET 8 SDK
 - task: UseDotNet@2
   displayName: 'Install .NET 8 SDK'
   inputs:
     packageType: 'sdk'
     version: '8.x'
 
-- script: |
-    dotnet --version
-  displayName: 'Verify .NET SDK'
-
-- script: |
-    dotnet restore KnowledgeHub.sln
+# Restore NuGet packages
+- task: DotNetCoreCLI@2
   displayName: 'Restore .NET dependencies'
+  inputs:
+    command: 'restore'
+    projects: 'KnowledgeHubAI.sln'
 
-- script: |
-    dotnet build KnowledgeHub.sln --configuration Release --no-restore
+# Build the solution
+- task: DotNetCoreCLI@2
   displayName: 'Build .NET solution'
+  inputs:
+    command: 'build'
+    projects: 'KnowledgeHubAI.sln'
+    arguments: '--configuration Release --no-restore'
 
-- script: |
-    dotnet test KnowledgeHub.Tests/KnowledgeHub.Tests.csproj --configuration Release --no-build
+# Run unit tests
+- task: DotNetCoreCLI@2
   displayName: 'Run .NET unit tests'
+  inputs:
+    command: 'test'
+    projects: 'KnowledgeHub.Tests/KnowledgeHub.Tests.csproj'
+    arguments: '--configuration Release --no-build'
+    publishTestResults: true
 
 
 # ============================================================
@@ -38,14 +47,15 @@ steps:
 # ============================================================
 
 - task: UsePythonVersion@0
-  displayName: 'Install Python'
+  displayName: 'Install Python 3.12'
   inputs:
     versionSpec: '3.12'
 
 - script: |
     python --version
     python -m pip --version
-  displayName: 'Verify Python'
+  displayName: 'Verify Python installation'
+  workingDirectory: 'KnowledgeHub.Agent'
 
 - script: |
     python -m pip install --upgrade pip
@@ -71,7 +81,7 @@ steps:
 - script: |
     node --version
     npm --version
-  displayName: 'Verify Node.js'
+  displayName: 'Verify Node.js installation'
 
 - script: |
     npm ci
@@ -87,3 +97,4 @@ steps:
     npm run build
   displayName: 'Build React application'
   workingDirectory: 'frontend/knowledgehub-ui'
+
