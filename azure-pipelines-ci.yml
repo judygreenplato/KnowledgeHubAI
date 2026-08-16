@@ -1,0 +1,89 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+# ============================================================
+# .NET
+# ============================================================
+
+- task: UseDotNet@2
+  displayName: 'Install .NET 8 SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'
+
+- script: |
+    dotnet --version
+  displayName: 'Verify .NET SDK'
+
+- script: |
+    dotnet restore KnowledgeHub.sln
+  displayName: 'Restore .NET dependencies'
+
+- script: |
+    dotnet build KnowledgeHub.sln --configuration Release --no-restore
+  displayName: 'Build .NET solution'
+
+- script: |
+    dotnet test KnowledgeHub.Tests/KnowledgeHub.Tests.csproj --configuration Release --no-build
+  displayName: 'Run .NET unit tests'
+
+
+# ============================================================
+# PYTHON
+# ============================================================
+
+- task: UsePythonVersion@0
+  displayName: 'Install Python'
+  inputs:
+    versionSpec: '3.12'
+
+- script: |
+    python --version
+    python -m pip --version
+  displayName: 'Verify Python'
+
+- script: |
+    python -m pip install --upgrade pip
+    python -m pip install -r requirements.txt
+  displayName: 'Install Python dependencies'
+  workingDirectory: 'KnowledgeHub.Agent'
+
+- script: |
+    python -m pytest
+  displayName: 'Run Python unit tests'
+  workingDirectory: 'KnowledgeHub.Agent'
+
+
+# ============================================================
+# REACT
+# ============================================================
+
+- task: NodeTool@0
+  displayName: 'Install Node.js 24'
+  inputs:
+    versionSpec: '24.x'
+
+- script: |
+    node --version
+    npm --version
+  displayName: 'Verify Node.js'
+
+- script: |
+    npm ci
+  displayName: 'Install React dependencies'
+  workingDirectory: 'frontend/knowledgehub-ui'
+
+- script: |
+    npm run lint
+  displayName: 'Run React lint'
+  workingDirectory: 'frontend/knowledgehub-ui'
+
+- script: |
+    npm run build
+  displayName: 'Build React application'
+  workingDirectory: 'frontend/knowledgehub-ui'
