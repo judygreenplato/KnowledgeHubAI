@@ -1,0 +1,32 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+- task: NodeTool@0
+  displayName: 'Install Node.js 24'
+  inputs:
+    versionSpec: '24.x'
+
+- script: |
+    node --version
+    npm --version
+  displayName: 'Verify Node.js installation'
+
+- script: |
+    npm ci
+  displayName: 'Install React dependencies'
+  workingDirectory: 'frontend/KnowledgeHub-UI'
+
+- script: |
+    npm run lint
+  displayName: 'Run React lint'
+  workingDirectory: 'frontend/KnowledgeHub-UI'
+
+- script: |
+    npm run build
+  displayName: 'Build React application'
+  workingDirectory: 'frontend/KnowledgeHub-UI'
