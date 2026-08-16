@@ -19,14 +19,14 @@ steps:
 - script: |
     npm ci
   displayName: 'Install React dependencies'
-  workingDirectory: 'frontend/KnowledgeHub-UI'
+  workingDirectory: 'frontend/knowledgehub-UI'
 
 - script: |
     npm run lint
   displayName: 'Run React lint'
-  workingDirectory: 'frontend/KnowledgeHub-UI'
+  workingDirectory: 'frontend/knowledgehub-UI'
 
 - script: |
     npm run build
   displayName: 'Build React application'
-  workingDirectory: 'frontend/KnowledgeHub-UI'
+  workingDirectory: 'frontend/knowledgehub-UI'
