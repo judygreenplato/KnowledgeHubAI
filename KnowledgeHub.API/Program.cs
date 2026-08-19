@@ -52,6 +52,12 @@ namespace KnowledgeHub.API
                 });
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddHttpContextAccessor();
+            var frontendUrl =
+            builder.Configuration["Frontend:BaseUrl"];
+
+            var pythonAgentUrl =
+                builder.Configuration["PythonAgent:BaseUrl"];
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy(
@@ -61,13 +67,13 @@ namespace KnowledgeHub.API
                         policy
                             .AllowAnyHeader()
                             .AllowAnyMethod()
-                            .WithOrigins(
-                                "http://localhost:5173");
+                            .WithOrigins(frontendUrl!);
                     });
             });
+
             builder.Services.AddHttpClient<IPythonAgentService, PythonAgentService>(client =>
             {
-                client.BaseAddress = new Uri("http://localhost:8000");
+                client.BaseAddress = new Uri(pythonAgentUrl!);
             });
             builder.Services.AddAutoMapper(typeof(ArticleProfile));
             builder.Services.AddFluentValidationAutoValidation();
