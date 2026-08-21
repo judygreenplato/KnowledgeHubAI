@@ -43,3 +43,6 @@ KnowledgeHub.Agent/.env
 # Coverage reports 
 .coverage
 htmlcov/
+
+# Docker persistent data
+docker-data/
